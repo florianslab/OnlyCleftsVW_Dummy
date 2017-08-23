@@ -78,6 +78,16 @@ var items = [
                          };
 
               },
+              customAnswerModel: function(x){
+               return $("<div>"+
+                          "<table style='margin:auto; text-align:center; border-spacing: 20px 0px'>"+
+                            "<tr><td id='top_left_female'></td><td id='TopLeft'></td></tr>"+
+                            "<tr><td id='top_right_male'></td><td id='TopRight'></td></tr>"+
+                            "<tr><td id='bottom_left_female'></td><td id='BottomLeft'></td></tr>"+
+                            "<tr><td id='bottom_right_male'></td><td id='BottomRight'></td></tr>"+
+                          "</table>"+
+                        "</div>");
+              },
               sequence: function(x){ return [
                   // DEBUG INFORMATION
                   "Condition: "+x.Condition+"; Item: "+x.item+"; Group: "+x.group,
