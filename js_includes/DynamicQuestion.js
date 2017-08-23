@@ -330,6 +330,7 @@ jqueryWidget: {
                   var li, answer = this.orderedAnswers[answerIndex];
                   //li = $(document.createElement("li")).addClass(this.cssPrefix + "scale-box").attr('id',answer);
                   li = $(document.createElement("td")).addClass(this.cssPrefix + "scale-box").attr('id',answer);
+                  a = $(document.createElement("span")).addClass(this.cssPrefix + (this.clickableAnswers ? "fake-link" : "no-link"));
                     // Whether a click on one of the options goes to the next item
                   if (this.clickableAnswers) {
                     (function (li) {
@@ -344,16 +345,16 @@ jqueryWidget: {
                     })(li);
                     (function(answer, li) {
                       li.click(function () { if (t.clickableAnswers) __Question_callback__(answer); });
-                    })(answer, li);
+                    })(answer, a);
                   }
                   var ans = this.answers[answer];
                   if (Array.isArray(ans)) ans = this.answers[answer][1];
-                  var a = $(document.createElement("span")).addClass(this.cssPrefix + (this.clickableAnswers ? "fake-link" : "no-link"));
-
+                  
                   // If the user specified a custom model for the answers
                   if (t.customAnswerModel) {
                       var currentAnswerDOM = $(t.customAnswerModel).find("#"+answer);
-                      if (currentAnswerDOM) currentAnswerDOM.append(ans).addClass(this.cssPrefix + "answer");
+                      //if (currentAnswerDOM) currentAnswerDOM.append(ans).addClass(this.cssPrefix + "answer");
+                      if (currentAnswerDOM) currentAnswerDOM.append(a.append(ans)).addClass(this.cssPrefix + "answer");
                   }
                   // If the user didn't specify a custom model
                   else // Adding the 'li' TD (appended with the answer) to the 'xl' TR 
@@ -449,6 +450,7 @@ jqueryWidget: {
                 
         // Handling keys
         t.safeBind($(document),"keydown", function(e) {
+            if (t.answerByPressingAKey == false) return;
             for (var n = 0; n < t.elements.length ; n++) {
               if ((typeof t.answers[t.answerNames[0]] != "string" || Array.isArray(t.randomOrder)) &&
                    t.elements[n].this == "answers" && domelements[n].css("display") != "none") {
