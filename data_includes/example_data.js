@@ -4,7 +4,7 @@ var Parameters = {},
 for (parameter in URLParameters) Parameters[URLParameters[parameter].split("=")[0]] = URLParameters[parameter].split("=")[1];
 
 
-var shuffleSequence = seq("2");
+var shuffleSequence = seq("first",rshuffle("2"));
 
 var showProgressBar = true;
 
@@ -30,7 +30,7 @@ var getCharacterSuitPicture = function(character, suit){
 
 var items = [
       
-    ["2", "ZipPreloader", {}],
+    ["first", "ZipPreloader", {}],
 
     /*["Instructions", "__SetCounter__", { }],
     
@@ -92,6 +92,7 @@ var items = [
                   // DEBUG INFORMATION
                   "Condition: "+x.Condition+"; Item: "+x.item+"; Group: "+x.group,
                   {pause: 150},
+                  "Here are the suits of the cards that the players started with. Guess which player Sarah is!",
                   x.sentence,
                   {this: "answers"}
               ];}
