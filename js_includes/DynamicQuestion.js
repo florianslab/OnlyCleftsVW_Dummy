@@ -116,6 +116,7 @@ jqueryWidget: {
         this.hasCorrect = dget(this.options, "hasCorrect", false);
         this.randomOrder = dget(this.options, "randomOrder", ! (this.hasCorrect === false));
         this.enabled = dget(this.options, "enabled", true);
+        this.customAnswerModel = dget(this.options, "customAnswerModel", null);
         this.unpause = null;
 
         assert(typeof this.answers == "object", "'answers' must be an object");
@@ -348,8 +349,16 @@ jqueryWidget: {
                   var ans = this.answers[answer];
                   if (Array.isArray(ans)) ans = this.answers[answer][1];
                   var a = $(document.createElement("span")).addClass(this.cssPrefix + (this.clickableAnswers ? "fake-link" : "no-link"));
-                  // Adding the 'li' TD (appended with the answer) to the 'xl' TR
-                  this.xl.append(li.append(a.append(ans)));                  
+
+                  // If the user specified a custom model for the answers
+                  if (t.customAnswerModel) {
+                      var currentAnswerDOM = $(t.customAnswerModel).find("#"+answer);
+                      if (currentAnswerDOM) currentAnswerDOM.append(ans).addClass(this.cssPrefix + "answer");
+                  }
+                  // If the user didn't specify a custom model
+                  else // Adding the 'li' TD (appended with the answer) to the 'xl' TR 
+                    this.xl.append(li.append(a.append(ans)));                  
+
                   // Printing the keys to press before/after each answer if keys have been specified for the answers
                   if (this.answerByPressingAKey != false && currentElement.hasOwnProperty("showKeys")) {
                       // Will add a SPAN inside 'li' before or after the 'a'
@@ -357,10 +366,19 @@ jqueryWidget: {
                       // Retrieving the key
                       if (this.answerByPressingAKey == "random")  keyLabel.html(t.randomOrder[answerIndex]);
                       else if (this.answerByPressingAKey == "associated")  keyLabel.html(t.answers[answer][0]);
-                      // Position can be left, right, top or bottom
-                      if (currentElement.showKeys == "left") li.prepend(keyLabel);
-                      else if (currentElement.showKeys == "right") li.append(keyLabel);
-                      else if (currentElement.showKeys.match(/top|bottom/)) this.keyLabels.append($("<td>").append(keyLabel));
+
+                      // If the user specified a custom model for the answers
+                      if (t.customAnswerModel) {
+                          var currentAnswerLabelDOM = $(t.customAnswerModel).find("#"+answer+"Label");
+                          if (currentAnswerLabelDOM) currentAnswerLabelDOM.append(keyLabel);
+                      }
+                      // If the user didn't specify a custom model
+                      else {
+                        // Position can be left, right, top or bottom
+                        if (currentElement.showKeys == "left") li.prepend(keyLabel);
+                        else if (currentElement.showKeys == "right") li.append(keyLabel);
+                        else if (currentElement.showKeys.match(/top|bottom/)) this.keyLabels.append($("<td>").append(keyLabel));
+                      }
                   }
               }
               var toShow = elementsToShow;
@@ -389,15 +407,22 @@ jqueryWidget: {
                   else showNext(toShow);
               };
               
-              var table = $("<table" + (conf_centerItems ? " align='center' style='width: 100%; text-align:center;'" : "") + ">");
-              var tr = $(document.createElement("tr"));
-              var td = $("<td" + (conf_centerItems ? " align='center'" : "") + ">")
-              if (conf_centerItems)
-                  td.attr('align', 'center');
-              domelements[el] = table.append(this.xl).addClass(t.cssPrefix + 'choice');
+              // If the user specified a custom model for the answers
+              if (t.customAnswerModel instanceof jQuery)
+                  domelements[el] = t.customAnswerModel;
+              // If the user didn't specify a custom model
+              else {
+                var table = $("<table" + (conf_centerItems ? " align='center' style='width: 100%; text-align:center;'" : "") + ">");
+                var tr = $(document.createElement("tr"));
+                var td = $("<td" + (conf_centerItems ? " align='center'" : "") + ">")
+                if (conf_centerItems)
+                    td.attr('align', 'center');
+                domelements[el] = table.append(this.xl).addClass(t.cssPrefix + 'choice');
+              }
+
               if (currentElement.hasOwnProperty("waitFor")) elementsToShow = [];
               // Adding the key labels if and where required
-              if (this.keyLabels != undefined) {
+              if (this.keyLabels != undefined && this.customAnswerModel == null) {
                   if (currentElement.showKeys == "top") table.prepend(this.keyLabels);
                   else if (currentElement.showKeys == "bottom") table.append(this.keyLabels);
               }
