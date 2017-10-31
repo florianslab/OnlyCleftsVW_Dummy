@@ -12,7 +12,7 @@ var defaults = [
     "DynamicQuestion",
     {
         clickableAnswers: true,
-        enabled: true
+        enabled: false
     }
 ];
 
@@ -20,10 +20,12 @@ var zipFiles = {pictures: "http://files.lab.florianschwarz.net/ibexfiles/OnlyCle
 
 var getCharacterSuitPicture = function(character, suit){
   return c2u.newPicture("", 
-                          [{id:"topleftcharacter", background: "url('"+character+"')", "background-size": "cover",
-                                width: 150, height: 150, left: 75, top: 0}, 
-                           {id:"topleftsuit", background: "url('"+suit+"')", "background-size": "cover", 
-                                width: 100, height: 150, left: 100, top: 150}],
+                          [{id:"character", background: "url('"+character+"')", "background-size": "cover",
+                                width: 150, height: 150, left: 0, top: 0}, 
+                           {id:"suit", background: "url('"+suit+"')", "background-size": "cover", 
+                                width: 120, height: 150, left: 160, top: 0}/*,
+                           {id:"back", background: "url('Back.png')", "background-size": "cover",
+                                width: 120, height: 150, left: 160, top: 0}*/],
                         {width: 300, height:300}
                        )
 }
@@ -31,6 +33,11 @@ var getCharacterSuitPicture = function(character, suit){
 var items = [
       
     ["first", "ZipPreloader", {}],
+      
+    ["first", "Message", {html: {include: "instructions.html"}, transfer: "click"}],
+      
+    ["first", "Separator", {normalMessage: "To continue to the tutorial, press any key on the keyboard. "+
+                                     "If you have any questions, feel free to ask the experimenter after the practice trials."}],
 
     /*["Instructions", "__SetCounter__", { }],
     
@@ -81,21 +88,65 @@ var items = [
               customAnswerModel: function(x){
                return $("<div>"+
                           "<table style='margin:auto; text-align:center; border-spacing: 20px 0px'>"+
-                            "<tr><td id='top_left_female'></td><td id='TopLeft'></td>"+
-                                "<td id='top_right_male'></td><td id='TopRight'></td></tr>"+
-                            "<tr><td id='bottom_left_female'></td><td id='BottomLeft'></td>"+
-                                "<td id='bottom_right_male'></td><td id='BottomRight'></td></tr>"+
+                            "<tr><td id='TopLeft' style='background-color: lightgreen;'></td><td id='TopRight' style='background-color: pink;'></td></tr>"+
+                            "<tr><td id='BottomLeft' style='background-color: lightgreen;'></td><td id='BottomRight' style='background-color: pink;'></td></tr>"+
                           "</table>"+
                         "</div>");
               },
-              sequence: function(x){ return [
-                  // DEBUG INFORMATION
-                  "Condition: "+x.Condition+"; Item: "+x.item+"; Group: "+x.group,
-                  {pause: 150},
-                  "Here are the suits of the cards that the players started with. Guess which player Sarah is!",
-                  x.sentence,
-                  {this: "answers"}
-              ];}
+              sequence: function(x){ 
+                  if (x.Condition == "Practice"){
+                     if (x.item == 1001){
+                       return [
+                         x.sentence,
+                         {this: "answers"},
+                         function(t){ $("#TopLeft #suit, #TopRight #suit, #BottomLeft #suit, #BottomRight #suit").css("display","none"); },
+                         {pause: 1000},
+                         function(t){ $("#TopLeft #suit, #TopRight #suit, #BottomLeft #suit, #BottomRight #suit").css("display","block"); },
+                         "<p id='txt'>Here as you can see, the gamemaster gave one card to each palyer. Now, the cards get revealed... (press Space)<p>",
+                         {pause: "key "},
+                         function(t){ 
+                             $("#txt").html("Now the gamemaster examines who was assigned which house and makes an announcement. (press Space)");
+                         },
+                         {pause: "key "},
+                         function(t){
+                             $("#txt").html("Here is a comment from the gamemaster's announcement, about Amy and the house she will join. (press Space)");
+                         },  
+                         {pause: "key "},
+                         function(t){
+                             $("#txt").html(x.sentence);
+                         },
+                         {pause: "key "},
+                         function(t){
+                             $("#txt").html("Your task is to identify Amy by clicking on the right character. (press Space)");
+                         },                             
+                         {pause: "key "},
+                         function(t){
+                             $("#txt").html("Here we know that Amy has clubs, so you should click on the bottom-left character. (press Space and click on Amy)");
+                             t.enabled = true;
+                         },
+                         {pause: "key "}
+                       ];
+                     }
+                     else if (x.item == 1002){
+                       return [{this:"answers"}];
+                     }
+                  }
+                  else {
+                    return [
+                      // DEBUG INFORMATION
+                      //"Condition: "+x.Condition+"; Item: "+x.item+"; Group: "+x.group+"; Target: "+x.Target_pic,
+                      "Here are the suits of the cards that the players started with. Guess which player "+x[x.Target_Row+"_"+x.Target_Gender+"_name"]+" is!",
+                      x.sentence,
+                      {this: "answers"},
+                      function(t){ $("#TopLeft #suit, #TopRight #suit, #BottomLeft #suit, #BottomRight #suit").css("display","none"); },
+                      {pause: 1000},
+                      function(t){ 
+                          $("#TopLeft #suit, #TopRight #suit, #BottomLeft #suit, #BottomRight #suit").css("display","block");
+                          t.enabled = true;
+                      }
+                    ];
+                  }
+                }
           }
       ]
   }));
