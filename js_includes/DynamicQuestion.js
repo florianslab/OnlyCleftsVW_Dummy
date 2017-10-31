@@ -450,6 +450,7 @@ jqueryWidget: {
                 
         // Handling keys
         t.safeBind($(document),"keydown", function(e) {
+            if (typeof t.unpause == "function") t.unpause(e.keyCode);
             if (t.answerByPressingAKey == false) return;
             for (var n = 0; n < t.elements.length ; n++) {
               if ((typeof t.answers[t.answerNames[0]] != "string" || Array.isArray(t.randomOrder)) &&
@@ -462,7 +463,6 @@ jqueryWidget: {
                 }
               }
             }
-            if (typeof t.unpause == "function") t.unpause(e.keyCode);
         });
                 
         var hide = false;

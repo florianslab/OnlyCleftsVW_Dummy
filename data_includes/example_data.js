@@ -4,7 +4,7 @@ var Parameters = {},
 for (parameter in URLParameters) Parameters[URLParameters[parameter].split("=")[0]] = URLParameters[parameter].split("=")[1];
 
 
-var shuffleSequence = seq("first",rshuffle("2"));
+var shuffleSequence = seq("first","1",rshuffle("2"));
 
 var showProgressBar = true;
 
@@ -97,14 +97,15 @@ var items = [
                   if (x.Condition == "Practice"){
                      if (x.item == 1001){
                        return [
-                         x.sentence,
                          {this: "answers"},
                          function(t){ $("#TopLeft #suit, #TopRight #suit, #BottomLeft #suit, #BottomRight #suit").css("display","none"); },
                          {pause: 1000},
                          function(t){ $("#TopLeft #suit, #TopRight #suit, #BottomLeft #suit, #BottomRight #suit").css("display","block"); },
                          "<p id='txt'>Here as you can see, the gamemaster gave one card to each palyer. Now, the cards get revealed... (press Space)<p>",
-                         {pause: "key "},
-                         function(t){ 
+                         {pause: "keyF"},
+                         "test"
+                         /*function(t){ 
+                             alert("test");
                              $("#txt").html("Now the gamemaster examines who was assigned which house and makes an announcement. (press Space)");
                          },
                          {pause: "key "},
@@ -113,7 +114,7 @@ var items = [
                          },  
                          {pause: "key "},
                          function(t){
-                             $("#txt").html(x.sentence);
+                             $("#txt").html(x.test_sentence);
                          },
                          {pause: "key "},
                          function(t){
@@ -124,19 +125,22 @@ var items = [
                              $("#txt").html("Here we know that Amy has clubs, so you should click on the bottom-left character. (press Space and click on Amy)");
                              t.enabled = true;
                          },
-                         {pause: "key "}
+                         {pause: "key "}*/
                        ];
                      }
                      else if (x.item == 1002){
-                       return [{this:"answers"}];
+                       return [
+                         "test",
+                         {this:"answers"}
+                       ];
                      }
                   }
                   else {
                     return [
                       // DEBUG INFORMATION
                       //"Condition: "+x.Condition+"; Item: "+x.item+"; Group: "+x.group+"; Target: "+x.Target_pic,
-                      "Here are the suits of the cards that the players started with. Guess which player "+x[x.Target_Row+"_"+x.Target_Gender+"_name"]+" is!",
-                      x.sentence,
+                      "Here are the suits of the cards that the players started with. Guess which player "+x.Target_name+" is!",
+                      x.test_sentence,
                       {this: "answers"},
                       function(t){ $("#TopLeft #suit, #TopRight #suit, #BottomLeft #suit, #BottomRight #suit").css("display","none"); },
                       {pause: 1000},
